@@ -1,0 +1,132 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="Keywords" content="blog"/>
+    <meta name="Description" content="blog"/>
+    <title>Simple</title>
+    <link rel="shortcut icon" href="/static/favicon.png"/>
+    <link rel="stylesheet" type="text/css" href="/main.css" />
+</head>
+<body>
+<div class="main">
+    <div class="header">
+    	<ul id="pages">
+            <li><a href="/">home</a></li>
+            <li><a href="/#/tags">tags</a></li>
+            <li><a href="/#/archive">archive</a></li>
+    	</ul>
+    </div>
+	<div class="wrap-header">
+	<h1>
+    <a href="/" id="title"></a>
+	</h1>
+	</div>
+<div id="md" style="display: none;">
+<!-- markdown -->
+>每一个CS专业学生都应该有良好的编程和数学功底。
+
+在阅读本文之前，请注意，**没人能给你适合的建议，因为没人能真正了解你**。
+
+
+回想自己大一刚来学校时，对计算机一窍不通，以为这个专业就是编程编程，各种编程语言都要学学。当时听说了ACM竞赛，觉得高大上得不行（当然现在也同样高大上）。
+
+不过到了大三这个年头，对这个专业算有了更深的一些感悟。CS全称是计算机科学与技术，科学在前，技术在后。也正因为这样，大学里面大多数课程是讲计算机如何组织和运行的，而人们普遍认为的各类编程语言学得反而不多。
+
+**计算机导论->模电数电->计算机组成原理->微机原理与接口技术->计算机系统结构**，实际上是一条线，贯穿于此，系统讲述了冯诺依曼结构计算机的原理。而**数据结构，计算机网络，操作系统，编译原理**等课程，同样也是CS专业的核心课程。
+
+同样，大学里所学的数学课程有**高等数学，线性代数，离散数学，概率论**。现在回想起来，真心觉得每门课都相当重要。如果选择读研做科研，数学的好坏决定了你的科研水平高低。也许你只想以后做名码农，好好coding就好了，但是相信这样一个情境，你的APP要做到每秒几万次的并发访问量，如何去部署服务器。每天用户的数据量达到多少TB，数据库如何组织，归根到底，还是**数学**。
+
+所以，也正是我开头提到的，编程和数学，是你的核心素养。
+
+###The Easy Way in School
+<del>这条tips不能算真正的建议，只是让你在大学里比较好过。</del>
+
+1. 大一上学完C语言，精通之。
+2. 大一下学C++，利用面向对象思想，做个小项目。学数据结构，上leetcode刷题。
+3. 大二上学学Qt，做些桌面应用，顺便学习git。加一句，Qt相当简易。<del>实际上用处并不大，仅是为了让以后的大作业简单些</del>
+4. 大二下，Java或者C#，选一门作为最常用语言吧。
+5. 大三上学Python，写个爬虫，做些机器学习的项目。
+6. 大三下学学PHP和JS，写个网站，或者个人博客。
+
+如果能做到以上几点，找工作应该是轻轻松松的吧。
+
+
+
+<!-- markdown end -->
+</div>
+<div class="entry" id="main">
+<!-- content -->
+
+<!-- content end -->
+</div>
+<br>
+<br>
+    <div id="disqus_thread"></div>
+	<div class="footer">
+		<p>© Copyright 2014 by isnowfy, Designed by isnowfy</p>
+	</div>
+</div>
+<script src="main.js"></script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ["\\(", "\\)"]], processEscapes: true}});
+</script>
+<script id="content" type="text/mustache">
+    <h1>{{title}}</h1>
+    <div class="tag">
+    {{date}}
+    {{#tags}}
+    <a href="/#/tag/{{name}}">#{{name}}</a>
+    {{/tags}}
+    </div>
+</script>
+<script id="pagesTemplate" type="text/mustache">
+    {{#pages}}
+    <li>
+        <a href="{{path}}">{{title}}</a>
+    </li>
+    {{/pages}}
+</script>
+<script>
+$(document).ready(function() {
+    $.ajax({
+        url: "main.json",
+        type: "GET",
+        dataType: "json",
+        success: function(data) {
+            $("#title").html(data.name);
+            var pagesTemplate = Hogan.compile($("#pagesTemplate").html());
+            var pagesHtml = pagesTemplate.render({"pages": data.pages});
+            $("#pages").append(pagesHtml);
+            //path
+            var path = "advice.html";
+            //path end
+            var now = 0;
+            for (var i = 0; i < data.posts.length; ++i)
+                if (path == data.posts[i].path)
+                    now = i;
+            var post = data.posts[now];
+            var tmp = post.tags.split(" ");
+            var tags = [];
+            for (var i = 0; i < tmp.length; ++i)
+                if (tmp[i].length > 0)
+                    tags.push({"name": tmp[i]});
+            var contentTemplate = Hogan.compile($("#content").html());
+            var contentHtml = contentTemplate.render({"title": post.title, "tags": tags, "date": post.date});
+            $("#main").prepend(contentHtml);
+            if (data.disqus_shortname.length > 0) {
+                var disqus_shortname = data.disqus_shortname;
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            }
+        }
+    });
+});
+</script>
+</body>
+</html>
